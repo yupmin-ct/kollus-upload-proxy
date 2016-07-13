@@ -1,0 +1,10 @@
+database:
+  driver: pdo_mysql
+  host: localhost
+  dbname: kollus_upload_proxy
+  user: kollus_upload_proxy
+  password: kollus_upload_proxy
+kollus:
+  domain: kr.kollus.com
+  api_access_token: api_access_token
+  channel_callback_url: channel_callback_url
