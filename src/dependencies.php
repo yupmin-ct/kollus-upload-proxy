@@ -3,10 +3,17 @@
 
 $container = $app->getContainer();
 
-// view renderer
-$container['renderer'] = function ($c) {
-    $settings = $c->get('settings')['renderer'];
-    return new Slim\Views\PhpRenderer($settings['template_path']);
+// twig view
+$container['view'] = function ($c) {
+    $settings = $c->get('settings')['view'];
+
+    $view = new \Slim\Views\Twig($settings['template_path'], $settings['settings']);
+    $view->addExtension(new \Slim\Views\TwigExtension(
+        $c['router'],
+        $c['request']->getUri()
+    ));
+
+    return $view;
 };
 
 // monolog

@@ -10,15 +10,19 @@ if (file_exists($configFilePath)) {
     $databaseSetting  = $yamlParser->parse(file_get_contents($configFilePath))['database'];
     $kollusSetting = $yamlParser->parse(file_get_contents($configFilePath))['kollus'];
 }
+$is_dev_mode = true;
 
 return [
     'settings' => [
         'displayErrorDetails' => true, // set to false in production
         'addContentLengthHeader' => false, // Allow the web server to send the content-length header
 
-        // Renderer settings
-        'renderer' => [
+        // Twig View settings
+        'view' => [
             'template_path' => __DIR__ . '/../templates/',
+            'settings' => [
+                'cache' => $is_dev_mode ? false : __DIR__ . '/../cache/twig/',
+            ]
         ],
 
         // Monolog settings
@@ -33,7 +37,7 @@ return [
                 'entity_paths' => [
                     'src/App/Entity'
                 ],
-                'is_dev_mode' => true,
+                'is_dev_mode' => $is_dev_mode,
                 'proxy_dir' =>  __DIR__.'/../cache/proxies',
                 'cache' => null,
             ],

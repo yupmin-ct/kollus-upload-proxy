@@ -1,0 +1,23 @@
+@import "//fonts.googleapis.com/css?family=Roboto:400,300";
+body {
+  font-weight: 300;
+}
+#alert_message {
+  position: fixed;
+  bottom: 1em;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+#alert_message .alert {
+  position: relative;
+  z-index: 999;
+  width: 50%;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}

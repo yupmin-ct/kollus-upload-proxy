@@ -1,0 +1,19 @@
+<nav class="navbar navbar-default  navbar-static-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ path_for('upload-list', {'serviceAccountKey': serviceAccountKey}) }} ">{% block title %}Kollus Upload Proxy{% endblock %}</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/yupmin-ct/kollus-upload-proxy"><i class="fa fa-github fa-lg"></i> Github</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>

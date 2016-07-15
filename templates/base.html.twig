@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}Kollus Upload Proxy{% endblock %}</title>
+
+    <link rel="shortcut icon" href="/assets/img/favicon.png">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/assets/css/default.css">
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+{% include 'topnav.html.twig' %}
+
+<div class="container">
+
+    <div id="content">{% block content %}{% endblock %}</div>
+
+    <hr />
+
+    <footer class="footer">
+        {% include 'footer.html.twig' %}
+    </footer>
+
+</div>
+<!--[if lt IE 10]>
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<![endif]-->
+<!--[if (gte IE 10)|!(IE)]><!-->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<!--<![endif]-->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script src="/assets/js/default.js"></script>
+</body>
+</html>

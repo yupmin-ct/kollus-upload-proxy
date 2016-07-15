@@ -5,6 +5,8 @@ database:
   user: kollus_upload_proxy
   password: kollus_upload_proxy
 kollus:
-  domain: kr.kollus.com
-  api_access_token: api_access_token
-  channel_callback_url: channel_callback_url
+  your-service-account-key:
+    service_account_key: kollus_service_account_key
+    domain: kr.kollus.com
+    api_access_token: api_access_token
+    channel_callback_url: channel_callback_url

@@ -3,7 +3,13 @@
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-$app->command('clear-callback-data [after_seconds]', function (OutputInterface $output, $after_seconds) use ($container) {
+/**
+ * @var \Interop\Container\ContainerInterface $container
+ */
+$app->command('clear-callback-data serviceAccountKey [afterSeconds]',function (
+    OutputInterface $output,
+    $serviceAccountKey, $afterSeconds
+) use ($container) {
     $kollusSettings = $container->get('settings')['kollus'];
 
     /**
@@ -21,96 +27,108 @@ $app->command('clear-callback-data [after_seconds]', function (OutputInterface $
      */
     $repository = $entityManager->getRepository('App\Entity\CallbackData');
 
+    if (!isset($kollusSettings[$serviceAccountKey])) {
+        $output->writeln('<error>Service account key is not exists.</error>');
+        return 1;
+    }
+
+    $context = [
+        'service_account_key' => $serviceAccountKey,
+        'afterSeconds' => $afterSeconds,
+    ];
+    $logger->info('clear-callback-data - Start', $context);
+
     /**
      * @var App\Entity\CallbackData[] $callbackDatas
      */
-    $callbackDatas = $repository->findAllAfterSeconds($after_seconds);
+    $callbackDatas = $repository->findAllAfterSeconds($serviceAccountKey, $afterSeconds);
 
-    $logger->info(
-        'clear-callback-data - Start',
-        [
-            'after_seconds' => $after_seconds,
-        ]
-    );
+    $baseUri = 'http://api.' . $kollusSettings[$serviceAccountKey]['domain'] . '/0/';
 
     foreach ($callbackDatas as $callbackData) {
         $oldUploadFileKey = $callbackData->getOldUploadFileKey();
 
+        $apiUri = 'media/library/delete/'.$oldUploadFileKey.'.json';
+
         $kollusApiHttpClient = new GuzzleHttp\Client([
-            'base_uri' => 'http://api.' . $kollusSettings['domain'] . '/0/',
+            'base_uri' => $baseUri,
             'timeout'  => 10.0
         ]);
 
         try {
             $kollusApiHttpResponse = $kollusApiHttpClient->post(
-                'media/library/delete/'.$oldUploadFileKey.'.json',
+                $apiUri,
                 [
                     'query' => [
-                        'access_token' => $kollusSettings['api_access_token'],
+                        'access_token' => $kollusSettings[$serviceAccountKey]['api_access_token'],
                     ],
                 ]
             );
 
-            /**
-             * $var string $kollusApiHttpResponseBody
-             */
+            $kollusApiHttpStatusCode = $kollusApiHttpResponse->getStatusCode();
             $kollusApiHttpResponseBody = $kollusApiHttpResponse->getBody()->getContents();
 
-            if ($kollusApiHttpResponse->getStatusCode() === 200 &&
+            if ($kollusApiHttpStatusCode === 200 &&
                 !empty($kollusApiHttpResponseBody) &&
                 ($kollusApiHttpResponseJSON = json_decode($kollusApiHttpResponseBody)) &&
                 ((isset($kollusApiHttpResponseJSON->error) && (int)$kollusApiHttpResponseJSON->error === 0)
                     || !isset($kollusApiHttpResponseJSON->error))
             ) {
-                // remove
+                // success
                 $repository->removeBy($callbackData);
             } else {
-                // set isError
-                $repository->setIsErrorBy($callbackData);
+                // fail
+                $message = 'Kollus Api Error';
+                $context = [
+                    'service_account_key' => $serviceAccountKey,
+                    'afterSeconds' => $afterSeconds,
+                    'url' => $baseUri . $apiUri,
+                    'status_code' => $kollusApiHttpStatusCode,
+                    'body' => $kollusApiHttpResponseBody,
+                    'old_upload_file_key' => $oldUploadFileKey
+                ];
 
-                $logger->error(
-                    'Kollus Api Error',
-                    [
-                        'status_code' => $kollusApiHttpResponse->getStatusCode(),
-                        'body' => $kollusApiHttpResponseBody,
-                        'old_upload_file_key' => $oldUploadFileKey
-                    ]
-                );
+                $repository->setIsErrorBy($callbackData, $message, $context);
+
+                $logger->error($message, $context);
             }
-
         } catch (GuzzleHttp\Exception\ClientException $e) {
             $kollusApiHttpResponse = $e->getResponse();
             $kollusApiHttpRequest = $e->getRequest();
 
-            /**
-             * $var string $kollusApiHttpResponseBody
-             */
+            $kollusApiHttpStatusCode = $kollusApiHttpResponse->getStatusCode();
             $kollusApiHttpResponseBody = $kollusApiHttpResponse->getBody()->getContents();
 
-            $logger->error(
-                'Kollus Api Response Error',
-                [
-                    'url' => $kollusApiHttpRequest->getUri(),
-                    'status_code' => $kollusApiHttpResponse->getStatusCode(),
-                    'body' => $kollusApiHttpResponseBody,
-                    'old_upload_file_key' => $oldUploadFileKey
-                ]
-            );
-        }
-    }
+            $message = 'Kollus Api Response Error';
+            $context = [
+                'service_account_key' => $serviceAccountKey,
+                'afterSeconds' => $afterSeconds,
+                'url' => $kollusApiHttpRequest->getUri(),
+                'status_code' => $kollusApiHttpStatusCode,
+                'body' => $kollusApiHttpResponseBody,
+                'old_upload_file_key' => $oldUploadFileKey
+            ];
 
-    $logger->info(
-        'clear-callback-data - END',
-        [
-            'callback_datas' => $callbackDatas,
-        ]
-    );
+            $repository->setIsErrorBy($callbackData, $message, $context);
 
-    $output->writeln('<info>finished.</info>');
+            $logger->error('Kollus Api Response Error', $context);
+        } // try catch
+    } // foreach
+
+    $context = [
+        'callback_datas' => $callbackDatas,
+    ];
+    $logger->info('clear-callback-data - END', $context);
+
+    $output->writeln('<info>Finished.</info>');
 
     return 0;
 })
-    ->Defaults(['after_seconds' => 3600])
-    ->Descriptions('Clear callback data', [
-    'after_seconds' => 'Delete after seconds',
-]);
+->Defaults(['afterSeconds' => 3600])
+->Descriptions(
+    'Clear callback data',
+    [
+        'serviceAccountKey' => 'Service account key',
+        'afterSeconds' => 'Delete after seconds',
+    ]
+);

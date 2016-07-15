@@ -56,13 +56,14 @@ That's it!
 
 ## Api url list
 
-* /upload/create_url
-* /upload/channel_callback
+* /{service_account_key}/upload/create_url
+* /{service_account_key}/upload/channel_callback
+* /{service_account_key}/upload/list
 
 ## Setting cronjob at 1 hour
 
 ```
-php src/console clear-callback-data [after_seconds]
+php src/console clear-callback-data serviceAccountKey [afterSeconds]
 ```
 
 ## Reset Database tables
