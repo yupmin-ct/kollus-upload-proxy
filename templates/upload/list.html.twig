@@ -8,83 +8,36 @@
     <div id="alert_message">
     </div>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Old upload file key</th>
-                <th>New upload file key</th>
-                <th>Will deleted</th>
-                <th>Is error</th>
-                <th>Error message</th>
-                <th>Created at</th>
-                <th>Updated at</th>
-                <th>&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% if itemCount > 0 %}
-            {% for item in paginator %}
-            <tr>
-                <td>{{ item.id }}</td>
-                <td>{{ item.oldUploadFileKey|striptags }}</td>
-                <td>{{ item.newUploadFileKey|striptags }}</td>
-                <td>
-                    {% if item.willDeleted %}
-                        <span class="fa fa-check"></span>
-                    {% else %}
-                        &nbsp;
-                    {% endif %}
-                </td>
-                <td>
-                    {% if item.isError %}
-                        <span class="fa fa-check"></span>
-                    {% else %}
-                        &nbsp;
-                    {% endif %}
-                </td>
-                <td>
-                    {% if item.isError %}
-                    <button type="button" class="btn btn-default btn-xs" data-container="body" data-toggle="popover" data-placement="bottom" data-title="{{ item.errorMessage }}" data-content="{{ item.errorData|json_encode() }}">
-                        <span class="fa fa-eye"> Show message</span>
-                    </button>
-                    {% else %}
-                    &nbsp;
-                    {% endif %}
-                </td>
-                <td><small>{{ item.createdAt|date('Y-m-d H:i:s') }}</small></td>
-                <td><small>{{ item.updatedAt|date('Y-m-d H:i:s') }}</small></td>
-                <td>
-                    <div class="btn-group btn-group-xs">
-                        <a href="{{ path_for('upload-list-delete', {'serviceAccountKey': serviceAccountKey, 'id': item.id}) }}" class="btn btn-danger" data-action="ajax-action" data-loading-text="Loading..." data-method="DELETE">
-                            <span class="fa fa-trash"></span> Delete
-                        </a>
-                        <a href="{{ path_for('upload-list-reset', {'serviceAccountKey': serviceAccountKey, 'id': item.id}) }}" class="btn btn-warning" data-action="ajax-action" data-loading-text="Loading..." data-method="PUT">
-                            <span class="fa fa-ban"></span> Reset
-                        </a>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        {% else %}
-            <tr>
-                <td colspan="7" style="text-align: center;">Empty list</td>
-            </tr>
-        {% endif %}
-        </tbody>
-    </table>
+    <form>
+        <fieldset>
+            <div class="form-group">
+                <label>Service account name</label>
+                <p class="form-contro-static">{{ kollusSettings['service_account_name'] }}</p>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="form-group">
+                <label>Service account key</label>
+                <p class="form-contro-static">{{ kollusSettings['service_account_key'] }}</p>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="form-group">
+                <label>Kollus domain</label>
+                <p class="form-contro-static">{{ kollusSettings['domain'] }}</p>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="form-group">
+                <label>Channel callback URL</label>
+                <p class="form-contro-static">{{ kollusSettings['channel_callback_url'] }}</p>
+            </div>
+        </fieldset>
+    </form>
 
-    <div class="pagination">
-    {% if pageCount > 1 %}
-        <ul class="pagination">
-            {% for pageItem in pageItems %}
-                <li{{ pageItem.thisPage ? ' class="active"' }}>
-                <a href="{{ pageItem.url }}">{{ pageItem['pageNumber'] }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    <hr />
+
+    <div id="list-page">
+        {% include 'upload/list-page.html.twig' %}
     </div>
 {% endblock %}
-
-

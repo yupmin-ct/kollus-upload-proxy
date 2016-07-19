@@ -14,10 +14,6 @@ function showAlert(type, message, options) {
 
   options = options || {};
 
-  if ('id' in options) {
-    alertDiv.attr('id', options.id);
-  }
-
   if ('delayDuration' in options) {
     delayDuration = options.delayDuration;
   }
@@ -53,22 +49,39 @@ $(document).on('click', '[data-action=ajax-action]', function(e) {
       type: method,
       dataType: 'json',
       success: function (data) {
-        if ('message' in data) {
-          showAlert('success', data.message);
+        var level = 'success';
+
+        if ('data' in data &&
+            'partial_url' in data.data) {
+
+          $.get(data.data.partial_url, null, function(data) {
+
+            if ('data' in data &&
+              'partials' in data.data) {
+
+              $.each(data.data.partials, function(key, value) {
+                $('#'+key).html(value);
+              });
+            }
+          }, 'json');
+        } else {
+          level = 'danger';
         }
 
-        document.location.reload();
+        if ('message' in data) {
+          showAlert(level, data.message);
+        }
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        data = jqXHR.length === 0 ? textStatus : $.parseJSON(jqXHR.responseText);
+        data = jqXHR.length === 0 ? {message: textStatus} : $.parseJSON(jqXHR.responseText);
 
         showAlert('danger', ('message' in data ? data.message : 'Ajax response error.'));
       },
       complete: function () {
         $(self).button('reset');
       }
-    });
-  }
+    }); // $.ajax
+  } // if
 });
 
 /**

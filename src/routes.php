@@ -1,10 +1,7 @@
 <?php
 // Routes
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
-
-$app->get('/{serviceAccountKey}/upload/list', '\App\Controller\UploadController:listAction')
+$app->get('/{serviceAccountKey}/upload/list[.{suffix:json}]', '\App\Controller\UploadController:listAction')
     ->setName('upload-list');
 
 $app->group('/{serviceAccountKey}/upload/list/{id:[0-9]+}', function() {

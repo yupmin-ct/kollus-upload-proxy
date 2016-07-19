@@ -1,0 +1,63 @@
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Old upload file key</th>
+        <th>New upload file key</th>
+        <th>Will deleted</th>
+        <th>Is error</th>
+        <th>Error message</th>
+        <th>Created at</th>
+        <th>Updated at</th>
+        <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in paginator %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.oldUploadFileKey|striptags }}</td>
+            <td>{{ item.newUploadFileKey|striptags }}</td>
+            <td>{{ item.willDeleted ? '<span class="fa fa-check"></span>' : '&nbsp;' }}</td>
+            <td>{{ item.isError ? '<span class="fa fa-check"></span>' : '&nbsp;' }}</td>
+            <td>
+                {% if item.isError %}
+                <button type="button" class="btn btn-default btn-xs" data-container="body" data-toggle="popover" data-placement="bottom" data-title="{{ item.errorMessage }}" data-content="{{ item.errorData|json_encode() }}">
+                    <span class="fa fa-eye"> Show message</span>
+                </button>
+                {% else %}
+                &nbsp;
+                {% endif %}
+            </td>
+            <td><small>{{ item.createdAt|date('Y-m-d H:i:s') }}</small></td>
+            <td><small>{{ item.updatedAt|date('Y-m-d H:i:s') }}</small></td>
+            <td>
+                <div class="btn-group btn-group-xs">
+                    <a href="{{ path_for('upload-list-delete', {'serviceAccountKey': serviceAccountKey, 'id': item.id}) }}" class="btn btn-danger" data-action="ajax-action" data-loading-text="Loading..." data-method="DELETE">
+                        <span class="fa fa-trash"></span> Delete
+                    </a>
+                    <a href="{{ path_for('upload-list-reset', {'serviceAccountKey': serviceAccountKey, 'id': item.id}) }}" class="btn btn-warning" data-action="ajax-action" data-loading-text="Loading..." data-method="PUT">
+                        <span class="fa fa-ban"></span> Reset
+                    </a>
+                </div>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="9" style="text-align: center;">No callback datas have been found.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if pageCount > 1 %}
+    <ul class="pagination">
+        {% for pageItem in pageItems %}
+        <li{{ pageItem.thisPage ? ' class="active"' }}>
+            <a href="{{ pageItem.pageUrl }}">{{ pageItem.pageNumber }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
