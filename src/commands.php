@@ -4,7 +4,7 @@
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @var \Interop\Container\ContainerInterface $container
+ * @var \Slim\Container $container
  */
 $app->command('clear-callback-data serviceAccountKey [afterSeconds]',function (
     OutputInterface $output,
@@ -59,9 +59,7 @@ $app->command('clear-callback-data serviceAccountKey [afterSeconds]',function (
             $kollusApiHttpResponse = $kollusApiHttpClient->post(
                 $apiUri,
                 [
-                    'query' => [
-                        'access_token' => $kollusSettings[$serviceAccountKey]['api_access_token'],
-                    ],
+                    'query' => ['access_token' => $kollusSettings[$serviceAccountKey]['api_access_token']],
                 ]
             );
 

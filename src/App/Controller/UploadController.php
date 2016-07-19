@@ -60,7 +60,7 @@ class UploadController extends AbstractController
     }
 
     /**
-     * createUrlAction
+     * createUrlAction - POST
      *
      * @param Request $request
      * @param Response $response
@@ -100,7 +100,13 @@ class UploadController extends AbstractController
         ]);
 
         try {
-            $kollusApiHttpResponse = $kollusApiHttpClient->post($apiUri, ['form_params' => $postParams]);
+            $kollusApiHttpResponse = $kollusApiHttpClient->post(
+                $apiUri,
+                [
+                    'form_params' => $postParams,
+                    'query' => ['access_token' => $this->kollusSettings[$serviceAccountKey]['api_access_token']],
+                ]
+            );
             $kollusApiHttpStatusCode = $kollusApiHttpResponse->getStatusCode();
             $kollusApiHttpResponseBody = $kollusApiHttpResponse->getBody()->getContents();
 
@@ -155,7 +161,7 @@ class UploadController extends AbstractController
     }
 
     /**
-     * channelCallbackAction
+     * channelCallbackAction - POST
      *
      * @param Request $request
      * @param Response $response
@@ -249,7 +255,7 @@ class UploadController extends AbstractController
     }
 
     /**
-     * listAction
+     * listAction - GET
      *
      * @param Request $request
      * @param Response $response
@@ -268,6 +274,7 @@ class UploadController extends AbstractController
 
         $getParams = $request->getQueryParams();
         $serviceAccountKey = $request->getAttribute('serviceAccountKey');
+        $suffix = $request->getAttribute('suffix');
 
         if (!isset($this->kollusSettings[$serviceAccountKey])) {
             return $response->withStatus(404)->write('Page not found');
@@ -277,7 +284,6 @@ class UploadController extends AbstractController
         $page = isset($getParams['page']) ? (int)$getParams['page'] : 1;
         $paginator = $repository->findPaginatorByPage($serviceAccountKey, $page, $perPage);
 
-        $itemCount = $paginator->getIterator()->count();
         $pageCount = ceil($paginator->count() / $perPage);
         $pageItems = [];
         for ($i = 1; $i <= $pageCount; $i++) {
@@ -285,11 +291,11 @@ class UploadController extends AbstractController
             if ($i !== 1) {
                 $queryParams['page'] = $i;
             }
-            $url = $this->router->pathFor('upload-list', ['serviceAccountKey' => $serviceAccountKey], $queryParams);
+            $pageUrl = $this->router->pathFor('upload-list', ['serviceAccountKey' => $serviceAccountKey], $queryParams);
             $pageItem = [
                 'thisPage' => $page === $i,
                 'pageNumber' => $i,
-                'url' => $url,
+                'pageUrl' => $pageUrl,
             ];
             $pageItems[] = $pageItem;
         }
@@ -297,16 +303,29 @@ class UploadController extends AbstractController
         $data = [
             'serviceAccountKey' => $serviceAccountKey,
             'paginator' => $paginator,
-            'itemCount' => $itemCount,
             'pageCount' => $pageCount,
             'pageItems' => $pageItems,
+            'kollusSettings' => $this->kollusSettings[$serviceAccountKey],
         ];
+
+        if (in_array($suffix, ['json']) && $request->isXhr()) {
+            return $response->withJson(
+                [
+                    'data' => [
+                        'partials' => [
+                            'list-page' => $view->fetch('upload/list-page.html.twig', $data)
+                        ]
+                    ]
+                ],
+                200
+            );
+        }
 
         return $view->render($response, 'upload/list.html.twig', $data);
     }
 
     /**
-     * listResetAction
+     * listResetAction - PUT
      *
      * @param Request $request
      * @param Response $response
@@ -317,11 +336,6 @@ class UploadController extends AbstractController
          * @var CallbackDataRepository $repository
          */
         $repository = $this->entityManager->getRepository('App\Entity\CallbackData');
-
-        /**
-         * @var Twig $view
-         */
-        $view = $this->container->get('view');
 
         $getParams = $request->getQueryParams();
         $serviceAccountKey = $request->getAttribute('serviceAccountKey');
@@ -350,12 +364,17 @@ class UploadController extends AbstractController
 
         $repository->resetBy($callbackData);
         $responseJSON['message'] = 'Successfully reset.';
+        $responseJSON['data']['partial_url'] = $this->router->pathFor(
+            'upload-list',
+            ['serviceAccountKey' => $serviceAccountKey, 'suffix' => 'json'],
+            $getParams
+        );
 
         return $response->withJson($responseJSON, $responseStatusCode);
     }
 
     /**
-     * listDeleteAction
+     * listDeleteAction - DELETE
      *
      * @param Request $request
      * @param Response $response
@@ -366,11 +385,6 @@ class UploadController extends AbstractController
          * @var CallbackDataRepository $repository
          */
         $repository = $this->entityManager->getRepository('App\Entity\CallbackData');
-
-        /**
-         * @var Twig $view
-         */
-        $view = $this->container->get('view');
 
         $getParams = $request->getQueryParams();
         $serviceAccountKey = $request->getAttribute('serviceAccountKey');
@@ -399,17 +413,12 @@ class UploadController extends AbstractController
 
         $repository->deleteBy($callbackData);
         $responseJSON['message'] = 'Successfully deleted.';
+        $responseJSON['data']['partial_url'] = $this->router->pathFor(
+            'upload-list',
+            ['serviceAccountKey' => $serviceAccountKey, 'suffix' => 'json'],
+            $getParams
+        );
 
         return $response->withJson($responseJSON, $responseStatusCode);
-    }
-
-    /**
-     * @param OutputInterface $output
-     * @param string $serviceAccountKey
-     * @param string $afterSeconds
-     * @return int
-     */
-    static public function clearCallbackDataAction(OutputInterface $output, $serviceAccountKey, $afterSeconds) {
-        var_dump($self, $serviceAccountKey, $afterSeconds);
     }
 }
