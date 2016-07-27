@@ -1,3 +1,7 @@
+kollus-upload-proxy:
+  domain: kollus-upload-proxy.app
+  is_dev_mode: true
+  use_twig_cache: false
 database:
   driver: pdo_mysql
   host: localhost

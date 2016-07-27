@@ -137,24 +137,38 @@ class UploadController extends AbstractController
                 $context['new_upload_file_key'] = $newUploadFileKey;
                 $this->logger->info('/upload/create_url - End', $context);
             } else {
-                $this->logger->error('/upload/create_url - Kollus Api Error', $context);
+                $this->logger->error('/upload/create_url - Kollus api result error', $context);
             }
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            $kollusApiHttpResponse = $e->getResponse();
+        } catch (\Exception $e) {
+            if ($e instanceof \GuzzleHttp\Exception\ClientException OR
+                $e instanceof \GuzzleHttp\Exception\ServerException) {
 
-            $kollusApiHttpStatusCode = $kollusApiHttpResponse->getStatusCode();
-            $kollusApiHttpResponseBody = $kollusApiHttpResponse->getBody()->getContents();
+                $kollusApiHttpResponse = $e->getResponse();
 
-            $message = '/upload/create_url - Kollus Api Error';
-            $context = [
-                'service_account_key' => $serviceAccountKey,
-                'post_params' => $postParams,
-                'url' => $baseUri . $apiUri,
-                'status_code' => $kollusApiHttpStatusCode,
-                'body' => $kollusApiHttpResponseBody,
-                'old_upload_file_key' => $oldUploadFileKey
-            ];
-            $this->logger->error($message, $context);
+                $kollusApiHttpStatusCode = $kollusApiHttpResponse->getStatusCode();
+                $kollusApiHttpResponseBody = $kollusApiHttpResponse->getBody()->getContents();
+
+                $message = '/upload/create_url - Kollus Api Error';
+                $context = [
+                    'service_account_key' => $serviceAccountKey,
+                    'post_params' => $postParams,
+                    'url' => $baseUri.$apiUri,
+                    'status_code' => $kollusApiHttpStatusCode,
+                    'body' => $kollusApiHttpResponseBody,
+                    'old_upload_file_key' => $oldUploadFileKey
+                ];
+                $this->logger->error($message, $context);
+            } else {
+                $kollusApiHttpStatusCode = 500;
+                $kollusApiHttpResponseBody = $e->getMessage();
+
+                $message = '/upload/create_url - Kollus Api Error';
+                $context = [
+                    'exception' => $e,
+                    'message' => $e->getMessage(),
+                ];
+                $this->logger->error($message, $context);
+            }
         }
 
         return $response->withJson(json_decode($kollusApiHttpResponseBody), $kollusApiHttpStatusCode);
@@ -230,24 +244,38 @@ class UploadController extends AbstractController
             ];
 
             $this->logger->info('/upload/channel_callback - End', $context);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            $proxyHttpResponse = $e->getResponse();
+        } catch (\Exception $e) {
+            if ($e instanceof \GuzzleHttp\Exception\ClientException OR
+                $e instanceof \GuzzleHttp\Exception\ServerException) {
 
-            $proxyHttpStatusCode = $proxyHttpResponse->getStatusCode();
-            $proxyHttpResponseBody = $proxyHttpResponse->getBody()->getContents();
+                $proxyHttpResponse = $e->getResponse();
 
-            $message = '/upload/channel_callback - Proxy http request error';
-            $context = [
-                'service_account_key' => $serviceAccountKey,
-                'post_params' => $postParams,
-                'channel_callback_url' => $this->kollusSettings[$serviceAccountKey]['channel_callback_url'],
-                'status_code' => $proxyHttpStatusCode,
-                'body' => $proxyHttpResponseBody,
-                'new_upload_file_key' => $newUploadFileKey,
-            ];
-            $this->logger->error($message, $context);
-            if ($callbackData instanceof CallbackData) {
-                $repository->setIsErrorBy($callbackData, $message, $context);
+                $proxyHttpStatusCode = $proxyHttpResponse->getStatusCode();
+                $proxyHttpResponseBody = $proxyHttpResponse->getBody()->getContents();
+
+                $message = '/upload/channel_callback - Proxy http request error';
+                $context = [
+                    'service_account_key' => $serviceAccountKey,
+                    'post_params' => $postParams,
+                    'channel_callback_url' => $this->kollusSettings[$serviceAccountKey]['channel_callback_url'],
+                    'status_code' => $proxyHttpStatusCode,
+                    'body' => $proxyHttpResponseBody,
+                    'new_upload_file_key' => $newUploadFileKey,
+                ];
+                $this->logger->error($message, $context);
+                if ($callbackData instanceof CallbackData) {
+                    $repository->setIsErrorBy($callbackData, $message, $context);
+                }
+            } else {
+                $proxyHttpStatusCode = 500;
+                $proxyHttpResponseBody = $e->getMessage();
+
+                $message = '/upload/create_url - Kollus Api Error';
+                $context = [
+                    'exception' => $e,
+                    'message' => $e->getMessage(),
+                ];
+                $this->logger->error($message, $context);
             }
         }
 
