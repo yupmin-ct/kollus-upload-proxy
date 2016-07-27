@@ -21,7 +21,7 @@ $container['logger'] = function ($c) {
     $settings = $c->get('settings')['logger'];
     $logger = new Monolog\Logger($settings['name']);
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
-    $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], Monolog\Logger::DEBUG));
+    $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], Monolog\Logger::DEBUG, true, 0666));
     return $logger;
 };
 
@@ -37,7 +37,10 @@ $container['entityManager'] = function ($c) {
     );
 
     if ($settings['meta']['is_dev_mode']) {
-        $config->setSQLLogger(new \Cobaia\Doctrine\MonologSQLLogger(null, null, __DIR__ . '/../logs/'));
+        $config->setSQLLogger(new \Cobaia\Doctrine\MonologSQLLogger(
+            null,
+            new Monolog\Handler\StreamHandler(__DIR__ . '/../logs/doctrine.log', Monolog\Logger::DEBUG, true, 0666)
+        ));
     }
 
     return \Doctrine\ORM\EntityManager::create($settings['connection'], $config);
