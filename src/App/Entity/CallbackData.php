@@ -9,7 +9,15 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @package App\Entity
  * @ORM\Entity(repositoryClass="\App\Repository\CallbackDataRepository")
- * @ORM\Table(name="callbackDatas",indexes={@ORM\Index(name="oldUploadFileKey_idx", columns={"serviceAccountKey","oldUploadFileKey"})},uniqueConstraints={@ORM\UniqueConstraint(name="newUploadFileKey_idx", columns={"newUploadFileKey"})})
+ * @ORM\Table(
+ *   name="callbackDatas",
+ *   indexes={
+ *     @ORM\Index(name="oldUploadFileKey_idx", columns={"serviceAccountKey","oldUploadFileKey"})
+ *   }
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="newUploadFileKey_idx", columns={"newUploadFileKey"})
+ *   }
+ * )
  */
 class CallbackData
 {
