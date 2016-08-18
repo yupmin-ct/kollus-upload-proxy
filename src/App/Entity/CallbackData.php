@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  *   name="callbackDatas",
  *   indexes={
  *     @ORM\Index(name="oldUploadFileKey_idx", columns={"serviceAccountKey","oldUploadFileKey"})
- *   }
+ *   },
  *   uniqueConstraints={
  *     @ORM\UniqueConstraint(name="newUploadFileKey_idx", columns={"newUploadFileKey"})
  *   }
