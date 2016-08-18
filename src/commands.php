@@ -6,9 +6,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @var \Slim\Container $container
  */
-$app->command('clear-callback-data serviceAccountKey [afterSeconds]',function (
+$app->command('clear-callback-data serviceAccountKey [afterSeconds]', function (
     OutputInterface $output,
-    $serviceAccountKey, $afterSeconds
+    $serviceAccountKey,
+    $afterSeconds
 ) use ($container) {
     $kollusSettings = $container->get('settings')['kollus'];
 
@@ -94,9 +95,8 @@ $app->command('clear-callback-data serviceAccountKey [afterSeconds]',function (
                     $logger->error($message, $context);
                 }
             } catch (\Exception $e) {
-                if ($e instanceof \GuzzleHttp\Exception\ClientException OR
+                if ($e instanceof \GuzzleHttp\Exception\ClientException ||
                     $e instanceof \GuzzleHttp\Exception\ServerException) {
-
                     $kollusApiHttpResponse = $e->getResponse();
                     $kollusApiHttpRequest = $e->getRequest();
 
@@ -136,7 +136,7 @@ $app->command('clear-callback-data serviceAccountKey [afterSeconds]',function (
     ];
     $logger->info('clear-callback-data - END', $context);
 
-    $output->writeln('<info>Finished.</info>');
+    $output->writeln('<info> ' . $serviceAccountKey . ' - Finished.</info>');
 
     return 0;
 })

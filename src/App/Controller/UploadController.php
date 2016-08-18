@@ -66,7 +66,8 @@ class UploadController extends AbstractController
      * @param Response $response
      * @return Response
      */
-    public function createUrlAction(Request $request, Response $response) {
+    public function createUrlAction(Request $request, Response $response)
+    {
         /**
          * @var CallbackDataRepository $repository
          */
@@ -87,7 +88,7 @@ class UploadController extends AbstractController
 
         $oldUploadFileKey = '';
         if (isset($postParams['old_upload_file_key'])) {
-            $oldUploadFileKey = $postParams['old_upload_file_key'];
+            $oldUploadFileKey = trim($postParams['old_upload_file_key']);
             unset($postParams['old_upload_file_key']);
         }
 
@@ -140,9 +141,8 @@ class UploadController extends AbstractController
                 $this->logger->error('/upload/create_url - Kollus api result error', $context);
             }
         } catch (\Exception $e) {
-            if ($e instanceof \GuzzleHttp\Exception\ClientException OR
+            if ($e instanceof \GuzzleHttp\Exception\ClientException ||
                 $e instanceof \GuzzleHttp\Exception\ServerException) {
-
                 $kollusApiHttpResponse = $e->getResponse();
 
                 $kollusApiHttpStatusCode = $kollusApiHttpResponse->getStatusCode();
@@ -181,7 +181,8 @@ class UploadController extends AbstractController
      * @param Response $response
      * @return Response
      */
-    public function channelCallbackAction(Request $request, Response $response) {
+    public function channelCallbackAction(Request $request, Response $response)
+    {
         /**
          * @var CallbackDataRepository $repository
          */
@@ -203,7 +204,6 @@ class UploadController extends AbstractController
 
         $newUploadFileKey = null;
         if (!isset($postParams['upload_file_key'])) {
-
             $this->logger->error('/upload/channel_callback - New upload file key is not exists.', $context);
             $data = ['error' => 1, 'message' => 'New upload file key is not exists.'];
             return $response->withJson($data, 404);
@@ -245,9 +245,8 @@ class UploadController extends AbstractController
 
             $this->logger->info('/upload/channel_callback - End', $context);
         } catch (\Exception $e) {
-            if ($e instanceof \GuzzleHttp\Exception\ClientException OR
+            if ($e instanceof \GuzzleHttp\Exception\ClientException ||
                 $e instanceof \GuzzleHttp\Exception\ServerException) {
-
                 $proxyHttpResponse = $e->getResponse();
 
                 $proxyHttpStatusCode = $proxyHttpResponse->getStatusCode();
@@ -270,7 +269,7 @@ class UploadController extends AbstractController
                 $proxyHttpStatusCode = 500;
                 $proxyHttpResponseBody = $e->getMessage();
 
-                $message = '/upload/create_url - Kollus Api Error';
+                $message = '/upload/channel_callback - Kollus Api Error';
                 $context = [
                     'exception' => $e,
                     'message' => $e->getMessage(),
@@ -289,7 +288,8 @@ class UploadController extends AbstractController
      * @param Response $response
      * @return Response
      */
-    public function listAction(Request $request, Response $response) {
+    public function listAction(Request $request, Response $response)
+    {
         /**
          * @var CallbackDataRepository $repository
          */
@@ -359,7 +359,8 @@ class UploadController extends AbstractController
      * @param Response $response
      * @return Response
      */
-    public function listResetAction(Request $request, Response $response) {
+    public function listResetAction(Request $request, Response $response)
+    {
         /**
          * @var CallbackDataRepository $repository
          */
@@ -408,7 +409,8 @@ class UploadController extends AbstractController
      * @param Response $response
      * @return Response
      */
-    public function listDeleteAction(Request $request, Response $response) {
+    public function listDeleteAction(Request $request, Response $response)
+    {
         /**
          * @var CallbackDataRepository $repository
          */

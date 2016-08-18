@@ -13,7 +13,8 @@ class CallbackDataRepository extends \Doctrine\ORM\EntityRepository
      * @param int $perPage
      * @return \Doctrine\ORM\Tools\Pagination\Paginator
      */
-    public function findPaginatorByPage($serviceAccountKey, $page = 1, $perPage = 10) {
+    public function findPaginatorByPage($serviceAccountKey, $page = 1, $perPage = 10)
+    {
         /**
          * @var EntityManager $entityManager
          */
@@ -35,7 +36,8 @@ class CallbackDataRepository extends \Doctrine\ORM\EntityRepository
      * @param string $oldUploadFileKey
      * @return CallbackData
      */
-    public function findByOldUploadFileKey($serviceAccountKey, $oldUploadFileKey) {
+    public function findByOldUploadFileKey($serviceAccountKey, $oldUploadFileKey)
+    {
         /**
          * @var EntityManager $entityManager
          */
@@ -59,7 +61,8 @@ class CallbackDataRepository extends \Doctrine\ORM\EntityRepository
      * @param string $newUploadFileKey
      * @return CallbackData
      */
-    public function registerBy($serviceAccountKey, $oldUploadFileKey, $newUploadFileKey) {
+    public function registerBy($serviceAccountKey, $oldUploadFileKey, $newUploadFileKey)
+    {
         /**
          * @var EntityManager $entityManager
          */
@@ -97,7 +100,8 @@ class CallbackDataRepository extends \Doctrine\ORM\EntityRepository
      * @param int $afterSeconds
      * @return CallbackData[]
      */
-    public function findAllAfterSeconds($serviceAccountKey, $afterSeconds) {
+    public function findAllAfterSeconds($serviceAccountKey, $afterSeconds)
+    {
         /**
          * @var EntityManager $entityManager
          */
@@ -118,7 +122,8 @@ class CallbackDataRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param CallbackData $callbackData
      */
-    public function removeBy($callbackData) {
+    public function removeBy($callbackData)
+    {
         /**
          * @var EntityManager $entityManager
          */
@@ -132,7 +137,8 @@ class CallbackDataRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param CallbackData $callbackData
      */
-    public function setWillDeletedBy($callbackData) {
+    public function setWillDeletedBy($callbackData)
+    {
         /**
          * @var EntityManager $entityManager
          */
@@ -148,7 +154,8 @@ class CallbackDataRepository extends \Doctrine\ORM\EntityRepository
      * @param string $errorMessage
      * @param string $errorData
      */
-    public function setIsErrorBy($callbackData, $errorMessage, $errorData) {
+    public function setIsErrorBy($callbackData, $errorMessage, $errorData)
+    {
         /**
          * @var EntityManager $entityManager
          */
@@ -164,7 +171,8 @@ class CallbackDataRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param CallbackData $callbackData
      */
-    public function deleteBy($callbackData) {
+    public function deleteBy($callbackData)
+    {
         /**
          * @var EntityManager $entityManager
          */
@@ -177,7 +185,8 @@ class CallbackDataRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param CallbackData $callbackData
      */
-    public function resetBy($callbackData) {
+    public function resetBy($callbackData)
+    {
         /**
          * @var EntityManager $entityManager
          */
